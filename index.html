@@ -5,149 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>雇傭條例自考系統</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 為了確保按鈕樣式正常，這裡加一點基礎樣式，以防 style.css 沒加載 */
+        .options-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .options-section button {
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .options-section button:hover {
+            background-color: #f0f0f0;
+        }
+        .options-section button.correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+        }
+        .options-section button.wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+        .options-section button.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e2e3e5;
+            border-radius: 5px;
+        }
+        .next-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h1>⚖️ 雇傭條例自考系統</h1>
+<div class="quiz-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="text-align: center;">⚖️ 雇傭條例自考系統</h1>
     
-    <!-- 进度条 -->
-    <div style="margin-bottom: 15px; color: #7f8c8d; font-size: 14px;">
-        题目 <span id="current-q">1</span> / <span id="total-q">0</span>
+    <!-- 進度條 -->
+    <div style="margin-bottom: 15px; color: #7f8c8d; font-size: 14px; text-align: center;">
+        題目 <span id="current-q">1</span> / <span id="total-q">0</span>
     </div>
 
-    <!-- 题目区域 -->
+    <!-- 題目區域 -->
     <div id="quiz-box">
-        <div class="question-section" id="question-text">题目加载中...</div>
+        <div class="question-section" id="question-text" style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px; white-space: pre-line;">題目加載中...</div>
         
-        <!-- 选项区域 (单选) -->
+        <!-- 選項區域 -->
         <div class="options-section" id="options-box"></div>
-        
-        <!-- 输入区域 (填空) -->
-        <div id="input-box" style="display:none; margin-top:15px;">
-            <input type="text" id="answer-input" placeholder="请输入答案...">
-            <button class="submit-btn" onclick="checkInputAnswer()">提交</button>
-        </div>
     </div>
 
-    <!-- 解析区域 -->
+    <!-- 解析區域 -->
     <div class="explanation" id="explanation-box">
-        <strong>💡 法条解析：</strong>
-        <p id="explanation-text"></p>
+        <strong>💡 法條解析：</strong>
+        <p id="explanation-text" style="white-space: pre-line; margin-top: 5px;"></p>
     </div>
 
-    <!-- 下一题按钮 -->
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一题 ➔</button>
+    <!-- 下一題按鈕 -->
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一題 ➔</button>
 </div>
 
-<!-- 引入数据和逻辑 -->
+<!-- 引入數據 -->
 <script src="data.js"></script>
+
+<!-- 邏輯腳本 -->
 <script>
+    // 1. 初始化變量
     let currentQuestionIndex = 0;
     let score = 0;
+    
+    // 檢查數據是否成功加載
+    if (typeof quizData === 'undefined') {
+        alert("錯誤：無法讀取 data.js，請確保 data.js 文件存在且變量名為 var quizData");
+    }
+
     const totalQuestions = quizData.length;
 
-    // 初始化页面
-    document.getElementById('total-q').innerText = totalQuestions;
+    // 2. 獲取頁面元素
+    const currentQEl = document.getElementById('current-q');
+    const totalQEl = document.getElementById('total-q');
+    const questionTextEl = document.getElementById('question-text');
+    const optionsBoxEl = document.getElementById('options-box');
+    const explanationBoxEl = document.getElementById('explanation-box');
+    const explanationTextEl = document.getElementById('explanation-text');
+    const nextBtnEl = document.getElementById('next-btn');
+
+    // 初始化頁面顯示總題數
+    totalQEl.innerText = totalQuestions;
+    
+    // 開始加載第一題
     loadQuestion();
 
+    // --- 核心函數：加載題目 ---
     function loadQuestion() {
+        // 獲取當前題目數據
         const currentData = quizData[currentQuestionIndex];
-        document.getElementById('current-q').innerText = currentQuestionIndex + 1;
-        document.getElementById('question-text').innerText = currentData.question;
-        document.getElementById('explanation-box').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
         
-        const optionsBox = document.getElementById('options-box');
-        const inputBox = document.getElementById('input-box');
+        // 更新進度
+        currentQEl.innerText = currentQuestionIndex + 1;
         
-        optionsBox.innerHTML = ''; // 清空旧选项
+        // 顯示題目
+        questionTextEl.innerText = currentData.question;
+        
+        // 重置狀態（隱藏解析、隱藏下一題按鈕、清空選項）
+        explanationBoxEl.style.display = 'none';
+        nextBtnEl.style.display = 'none';
+        optionsBoxEl.innerHTML = ''; 
 
-        if (currentData.type === 'single') {
-            inputBox.style.display = 'none';
-            optionsBox.style.display = 'flex';
-            
-            currentData.options.forEach(option => {
-                const btn = document.createElement('button');
-                btn.innerText = option;
-                btn.onclick = () => checkOptionAnswer(btn, option, currentData);
-                optionsBox.appendChild(btn);
-            });
-        } else if (currentData.type === 'cloze') {
-            optionsBox.style.display = 'none';
-            inputBox.style.display = 'block';
-            document.getElementById('answer-input').value = ''; // 清空输入框
-            document.getElementById('answer-input').disabled = false;
-        }
+        // 生成選項按鈕
+        currentData.options.forEach((optionText, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = optionText;
+            // 點擊時觸發檢查，傳入：被點的按鈕、索引、正確答案索引
+            btn.onclick = () => checkAnswer(btn, index, currentData.correctIndex, currentData.explanation);
+            optionsBoxEl.appendChild(btn);
+        });
     }
 
-    // 检查单选题
-    function checkOptionAnswer(btn, selectedOption, data) {
-        const buttons = document.querySelectorAll('.options-section button');
-        buttons.forEach(b => b.classList.add('disabled')); // 禁用所有按钮
+    // --- 核心函數：檢查答案 ---
+    function checkAnswer(selectedBtn, selectedIndex, correctIndex, explanation) {
+        const allButtons = optionsBoxEl.querySelectorAll('button');
+        
+        // 1. 鎖定所有按鈕，不能再點
+        allButtons.forEach(btn => btn.classList.add('disabled'));
 
-        if (selectedOption === data.correctAnswer) {
-            btn.classList.add('correct');
+        // 2. 判斷對錯
+        if (selectedIndex === correctIndex) {
+            // 答對了
+            selectedBtn.classList.add('correct');
             score++;
         } else {
-            btn.classList.add('wrong');
-            // 自动把正确的标绿
-            buttons.forEach(b => {
-                if (b.innerText === data.correctAnswer) b.classList.add('correct');
-            });
+            // 答錯了
+            selectedBtn.classList.add('wrong');
+            // 自動把正確答案標綠
+            allButtons[correctIndex].classList.add('correct');
         }
-        showExplanation(data.explanation);
-    }
 
-    // 检查填空题
-    function checkInputAnswer() {
-        const input = document.getElementById('answer-input');
-        const userAnswer = input.value.trim();
-        const data = quizData[currentQuestionIndex];
-        
-        input.disabled = true; // 禁用输入框
+        // 3. 顯示解析
+        explanationTextEl.innerText = explanation;
+        explanationBoxEl.style.display = 'block';
 
-        if (userAnswer === data.correctAnswer) {
-            input.style.borderColor = '#28a745';
-            input.style.backgroundColor = '#d4edda';
-            score++;
-        } else {
-            input.style.borderColor = '#dc3545';
-            input.style.backgroundColor = '#f8d7da';
-            alert(`回答错误！正确答案是：${data.correctAnswer}`);
-        }
-        showExplanation(data.explanation);
-    }
-
-    function showExplanation(text) {
-        document.getElementById('explanation-text').innerText = text;
-        document.getElementById('explanation-box').style.display = 'block';
+        // 4. 顯示下一題按鈕
+        nextBtnEl.style.display = 'block';
         
-        const nextBtn = document.getElementById('next-btn');
-        nextBtn.style.display = 'block';
-        
+        // 如果是最後一題，按鈕文字改成「查看成績」
         if (currentQuestionIndex === totalQuestions - 1) {
-            nextBtn.innerText = "查看成绩 🏁";
+            nextBtnEl.innerText = "查看成績 🏁";
         }
     }
 
+    // --- 核心函數：下一題 ---
     function nextQuestion() {
         if (currentQuestionIndex < totalQuestions - 1) {
             currentQuestionIndex++;
             loadQuestion();
         } else {
-            // 结束页面
-            document.querySelector('.quiz-container').innerHTML = `
-                <div style="text-align:center; padding:40px;">
-                    <h1>🎉 测试完成</h1>
-                    <p style="font-size:20px;">你的得分：<strong>${score} / ${totalQuestions}</strong></p>
-                    <button class="next-btn" style="display:block" onclick="location.reload()">再做一次</button>
-                </div>
-            `;
+            showFinalScore();
         }
+    }
+
+    // --- 核心函數：顯示成績 ---
+    function showFinalScore() {
+        document.querySelector('.quiz-container').innerHTML = `
+            <div style="text-align:center; padding:40px;">
+                <h1 style="font-size: 3em;">🎉</h1>
+                <h2>測試完成！</h2>
+                <p style="font-size:24px; margin: 20px 0;">
+                    你的得分：<strong style="color: #007bff;">${score}</strong> / ${totalQuestions}
+                </p>
+                <button class="next-btn" style="display:inline-block" onclick="location.reload()">再做一次</button>
+            </div>
+        `;
     }
 </script>
 
 </body>
 </html>
-
