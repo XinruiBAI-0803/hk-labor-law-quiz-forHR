@@ -258,5 +258,42 @@ const quizData = [
     ],
     correctIndex: 1,
     explanation: "✅ 正確 (Correct)。\n僱主必須保存僱員過去 6 個月的工資及僱傭紀錄。\nEmployers must keep wage and employment records covering the preceding 6 months."
+  },
+  {
+    id: 21,
+    category: "判斷題 / True or False",
+    question: "【判斷題】僱主在任何情況下都不能解僱懷孕僱員，否則即屬違法。\n[True/False] An employer cannot dismiss a pregnant employee under any circumstances; otherwise, it is illegal.",
+    options: [
+      "正確 / True",
+      "錯誤 / False"
+    ],
+    correctIndex: 1,
+    explanation: "✅ 錯誤 (False)。\n雖然法律極力保障懷孕僱員，但如果僱員犯下嚴重過失（如欺詐、嚴重疏忽），僱主仍有權根據《僱傭條例》第 9 條將其即時解僱。\nAlthough the law protects pregnant employees, an employer may still summarily dismiss her under Section 9 of the EO if she commits serious misconduct (e.g., fraud, gross negligence)."
+  },
+  {
+    id: 22,
+    category: "計算題 / Calculation",
+    question: "【計算題】員工月薪 HK$15,000，他在 4 月份（30天）工作了 10 天後辭職。請計算他應得的工資。\n[Calculation] Monthly salary HK$15,000. The employee resigned after working 10 days in April (30 days). Calculate the wages payable.",
+    options: [
+      "HK$4,838.70",
+      "HK$5,000.00",
+      "HK$7,500.00",
+      "HK$15,000.00"
+    ],
+    correctIndex: 1,
+    explanation: "✅ HK$5,000.00。\n計算公式：月薪 ÷ 當月日數 × 工作天數\nFormula: Monthly Rate ÷ Days in the month × Days worked\nHK$15,000 ÷ 30 × 10 = HK$5,000。"
+  },
+  {
+    id: 23,
+    category: "邏輯分析 / Logical Analysis",
+    question: "以下哪些屬於《僱傭條例》規定的法定權益？\nWhich of the following are statutory rights under the Employment Ordinance?\n1. 休息日 (Rest Day)\n2. 雙糧 (Double Pay)\n3. 有薪年假 (Annual Leave)",
+    options: [
+      "只有 1 & 2 / 1 & 2 only",
+      "只有 1 & 3 / 1 & 3 only",
+      "只有 2 & 3 / 2 & 3 only",
+      "以上全部皆是 / All of the above"
+    ],
+    correctIndex: 1,
+    explanation: "✅ 只有 1 & 3 (1 & 3 only)。\n解析：「雙糧」（年終酬金）並非強制性的法定權益，而是視乎僱傭合約而定。休息日和年假則是法例規定的。\nExplanation: 'Double Pay' (End of Year Payment) is NOT mandatory unless specified in the contract. Rest days and Annual Leave are statutory requirements."
   }
-];
+
