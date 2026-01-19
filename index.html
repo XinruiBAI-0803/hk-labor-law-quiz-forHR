@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港劳工法自考系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>⚖️ 香港劳工法自考</h1>
+    
+    <!-- 进度条 -->
+    <div style="margin-bottom: 15px; color: #7f8c8d; font-size: 14px;">
+        题目 <span id="current-q">1</span> / <span id="total-q">0</span>
+    </div>
+
+    <!-- 题目区域 -->
+    <div id="quiz-box">
+        <div class="question-section" id="question-text">题目加载中...</div>
+        
+        <!-- 选项区域 (单选) -->
+        <div class="options-section" id="options-box"></div>
+        
+        <!-- 输入区域 (填空) -->
+        <div id="input-box" style="display:none; margin-top:15px;">
+            <input type="text" id="answer-input" placeholder="请输入答案...">
+            <button class="submit-btn" onclick="checkInputAnswer()">提交</button>
+        </div>
+    </div>
+
+    <!-- 解析区域 -->
+    <div class="explanation" id="explanation-box">
+        <strong>💡 法条解析：</strong>
+        <p id="explanation-text"></p>
+    </div>
+
+    <!-- 下一题按钮 -->
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一题 ➔</button>
+</div>
+
+<!-- 引入数据和逻辑 -->
+<script src="data.js"></script>
+<script>
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const totalQuestions = quizData.length;
+
+    // 初始化页面
+    document.getElementById('total-q').innerText = totalQuestions;
+    loadQuestion();
+
+    function loadQuestion() {
+        const currentData = quizData[currentQuestionIndex];
+        document.getElementById('current-q').innerText = currentQuestionIndex + 1;
+        document.getElementById('question-text').innerText = currentData.question;
+        document.getElementById('explanation-box').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        const optionsBox = document.getElementById('options-box');
+        const inputBox = document.getElementById('input-box');
+        
+        optionsBox.innerHTML = ''; // 清空旧选项
+
+        if (currentData.type === 'single') {
+            inputBox.style.display = 'none';
+            optionsBox.style.display = 'flex';
+            
+            currentData.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.innerText = option;
+                btn.onclick = () => checkOptionAnswer(btn, option, currentData);
+                optionsBox.appendChild(btn);
+            });
+        } else if (currentData.type === 'cloze') {
+            optionsBox.style.display = 'none';
+            inputBox.style.display = 'block';
+            document.getElementById('answer-input').value = ''; // 清空输入框
+            document.getElementById('answer-input').disabled = false;
+        }
+    }
+
+    // 检查单选题
+    function checkOptionAnswer(btn, selectedOption, data) {
+        const buttons = document.querySelectorAll('.options-section button');
+        buttons.forEach(b => b.classList.add('disabled')); // 禁用所有按钮
+
+        if (selectedOption === data.correctAnswer) {
+            btn.classList.add('correct');
+            score++;
+        } else {
+            btn.classList.add('wrong');
+            // 自动把正确的标绿
+            buttons.forEach(b => {
+                if (b.innerText === data.correctAnswer) b.classList.add('correct');
+            });
+        }
+        showExplanation(data.explanation);
+    }
+
+    // 检查填空题
+    function checkInputAnswer() {
+        const input = document.getElementById('answer-input');
+        const userAnswer = input.value.trim();
+        const data = quizData[currentQuestionIndex];
+        
+        input.disabled = true; // 禁用输入框
+
+        if (userAnswer === data.correctAnswer) {
+            input.style.borderColor = '#28a745';
+            input.style.backgroundColor = '#d4edda';
+            score++;
+        } else {
+            input.style.borderColor = '#dc3545';
+            input.style.backgroundColor = '#f8d7da';
+            alert(`回答错误！正确答案是：${data.correctAnswer}`);
+        }
+        showExplanation(data.explanation);
+    }
+
+    function showExplanation(text) {
+        document.getElementById('explanation-text').innerText = text;
+        document.getElementById('explanation-box').style.display = 'block';
+        
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.style.display = 'block';
+        
+        if (currentQuestionIndex === totalQuestions - 1) {
+            nextBtn.innerText = "查看成绩 🏁";
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < totalQuestions - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            // 结束页面
+            document.querySelector('.quiz-container').innerHTML = `
+                <div style="text-align:center; padding:40px;">
+                    <h1>🎉 测试完成</h1>
+                    <p style="font-size:20px;">你的得分：<strong>${score} / ${totalQuestions}</strong></p>
+                    <button class="next-btn" style="display:block" onclick="location.reload()">再做一次</button>
+                </div>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>
