@@ -296,4 +296,4 @@ const quizData = [
     correctIndex: 1,
     explanation: "✅ 只有 1 & 3 (1 & 3 only)。\n解析：「雙糧」（年終酬金）並非強制性的法定權益，而是視乎僱傭合約而定。休息日和年假則是法例規定的。\nExplanation: 'Double Pay' (End of Year Payment) is NOT mandatory unless specified in the contract. Rest days and Annual Leave are statutory requirements."
   }
-
+];
